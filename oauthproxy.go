@@ -430,7 +430,7 @@ func (p *OAuthProxy) GetRedirect(req *http.Request) (redirect string, err error)
 	if redirect == "" || !strings.HasPrefix(redirect, "/") || strings.HasPrefix(redirect, "//") {
 		redirectUrl, err := url.Parse(redirect)
 		// also allow request hosts that are or end with the cookie domain
-		if err != nil || (redirectUrl.Host != p.CookieDomain && !strings.HasSuffix(redirectUrl.Host, "."+p.CookieDomain)) {
+		if err != nil || p.CookieDomain == "" || (redirectUrl.Host != p.CookieDomain && !strings.HasSuffix(redirectUrl.Host, "."+p.CookieDomain)) {
 			redirect = "/"
 		}
 	}

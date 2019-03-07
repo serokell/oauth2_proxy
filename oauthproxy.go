@@ -321,7 +321,7 @@ func (p *OAuthProxy) LoadCookiedSession(req *http.Request) (*providers.SessionSt
 	if err != nil {
 		// always http.ErrNoCookie
 		// return nil, age, fmt.Errorf("Cookie %q not present", p.CookieName)
-    return nil, age, nil
+		return nil, age, nil
 	}
 	val, timestamp, ok := cookie.Validate(c, p.CookieSeed, p.CookieExpire)
 	if !ok {
@@ -428,7 +428,11 @@ func (p *OAuthProxy) GetRedirect(req *http.Request) (redirect string, err error)
 
 	redirect = req.Form.Get("rd")
 	if redirect == "" || !strings.HasPrefix(redirect, "/") || strings.HasPrefix(redirect, "//") {
-		redirect = "/"
+		redirectUrl, err := url.Parse(redirect)
+		// also allow request hosts that are or end with the cookie domain
+		if err != nil || (redirectUrl.Host != p.CookieDomain && !strings.HasSuffix(redirectUrl.Host, "."+p.CookieDomain)) {
+			redirect = "/"
+		}
 	}
 
 	return

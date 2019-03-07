@@ -585,7 +585,7 @@ func (p *OAuthProxy) OAuthCallback(rw http.ResponseWriter, req *http.Request) {
 
 func (p *OAuthProxy) AuthenticateOnly(rw http.ResponseWriter, req *http.Request) {
 	status := p.Authenticate(rw, req)
-	if status == http.StatusAccepted {
+	if status == http.StatusAccepted || req.URL.Query().Get("headersOnly") != "" {
 		rw.WriteHeader(http.StatusAccepted)
 	} else {
 		http.Error(rw, "unauthorized request", http.StatusUnauthorized)

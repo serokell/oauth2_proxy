@@ -420,13 +420,7 @@ func (p *OAuthProxy) ManualSignIn(rw http.ResponseWriter, req *http.Request) (st
 	return "", false
 }
 
-func (p *OAuthProxy) GetRedirect(req *http.Request) (redirect string, err error) {
-	err = req.ParseForm()
-	if err != nil {
-		return
-	}
-
-	redirect = req.Form.Get("rd")
+func (p *OAuthProxy) ValidateRedirect(redirect string) (string) {
 	if redirect == "" || !strings.HasPrefix(redirect, "/") || strings.HasPrefix(redirect, "//") {
 		redirectUrl, err := url.Parse(redirect)
 		// also allow request hosts that are or end with the cookie domain
@@ -434,8 +428,18 @@ func (p *OAuthProxy) GetRedirect(req *http.Request) (redirect string, err error)
 			redirect = "/"
 		}
 	}
+  return redirect
+}
 
-	return
+func (p *OAuthProxy) GetRedirect(req *http.Request) (redirect string, err error) {
+	err = req.ParseForm()
+	if err != nil {
+		return
+	}
+
+	redirect = req.Form.Get("rd")
+  redirect = p.ValidateRedirect(redirect)
+  return
 }
 
 func (p *OAuthProxy) IsWhitelistedRequest(req *http.Request) (ok bool) {
@@ -567,9 +571,7 @@ func (p *OAuthProxy) OAuthCallback(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if !strings.HasPrefix(redirect, "/") || strings.HasPrefix(redirect, "//") {
-		redirect = "/"
-	}
+  redirect = p.ValidateRedirect(redirect)
 
 	// set cookie, or deny
 	if p.Validator(session.Email) && p.provider.ValidateGroup(session.Email) {

@@ -82,7 +82,8 @@ type Options struct {
 	ProtectedResource string `flag:"resource" cfg:"resource" env:"OAUTH2_PROXY_RESOURCE"`
 	ValidateURL       string `flag:"validate-url" cfg:"validate_url" env:"OAUTH2_PROXY_VALIDATE_URL"`
 	Scope             string `flag:"scope" cfg:"scope" env:"OAUTH2_PROXY_SCOPE"`
-	ApprovalPrompt    string `flag:"approval-prompt" cfg:"approval_prompt" env:"OAUTH2_PROXY_APPROVAL_PROMPT"`
+	ApprovalPrompt    bool   `flag:"approval-prompt" cfg:"approval_prompt" env:"OAUTH2_PROXY_APPROVAL_PROMPT"`
+	AccountChooser    bool   `flag:"account-chooser" cfg:"account_chooser" env:"OAUTH2_PROXY_ACCOUNT_CHOOSER"`
 
 	RequestLogging       bool   `flag:"request-logging" cfg:"request_logging" env:"OAUTH2_PROXY_REQUEST_LOGGING"`
 	RequestLoggingFormat string `flag:"request-logging-format" cfg:"request_logging_format" env:"OAUTH2_PROXY_REQUEST_LOGGING_FORMAT"`
@@ -129,7 +130,8 @@ func NewOptions() *Options {
 		PassHostHeader:       true,
 		SetAuthorization:     false,
 		PassAuthorization:    false,
-		ApprovalPrompt:       "force",
+		ApprovalPrompt:       true,
+		AccountChooser:       false,
 		RequestLogging:       true,
 		SkipOIDCDiscovery:    false,
 		RequestLoggingFormat: defaultRequestLoggingFormat,
@@ -297,6 +299,7 @@ func parseProviderInfo(o *Options, msgs []string) []string {
 		ClientID:       o.ClientID,
 		ClientSecret:   o.ClientSecret,
 		ApprovalPrompt: o.ApprovalPrompt,
+		AccountChooser: o.AccountChooser,
 	}
 	p.LoginURL, msgs = parseURL(o.LoginURL, "login", msgs)
 	p.RedeemURL, msgs = parseURL(o.RedeemURL, "redeem", msgs)

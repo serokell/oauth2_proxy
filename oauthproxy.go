@@ -50,6 +50,12 @@ var SignatureHeaders = []string{
 	"Gap-Auth",
 }
 
+var (
+	// Used to check final redirects are not susceptible to open redirects.
+	// Matches //, /\ and both of these with whitespace in between (eg / / or / \).
+	invalidRedirectRegex = regexp.MustCompile(`^/(\s|\v)?(/|\\)`)
+)
+
 // OAuthProxy is the main authentication proxy
 type OAuthProxy struct {
 	CookieSeed     string
@@ -617,7 +623,7 @@ func (p *OAuthProxy) GetRedirect(req *http.Request) (redirect string, err error)
 // IsValidRedirect checks whether the redirect URL is whitelisted
 func (p *OAuthProxy) IsValidRedirect(redirect string) bool {
 	switch {
-	case strings.HasPrefix(redirect, "/") && !strings.HasPrefix(redirect, "//") && !strings.HasPrefix(redirect, "/\\"):
+	case strings.HasPrefix(redirect, "/") && !strings.HasPrefix(redirect, "//") && !invalidRedirectRegex.MatchString(redirect):
 		return true
 	case strings.HasPrefix(redirect, "http://") || strings.HasPrefix(redirect, "https://"):
 		redirectURL, err := url.Parse(redirect)

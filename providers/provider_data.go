@@ -16,7 +16,8 @@ type ProviderData struct {
 	ProtectedResource *url.URL
 	ValidateURL       *url.URL
 	Scope             string
-	ApprovalPrompt    string
+	ApprovalPrompt    bool
+	AccountChooser    bool
 }
 
 // Data returns the ProviderData

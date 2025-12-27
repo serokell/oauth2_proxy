@@ -261,7 +261,8 @@ An example [oauth2_proxy.cfg](contrib/oauth2_proxy.cfg.example) config file is i
 
 ```
 Usage of oauth2_proxy:
-  -approval-prompt string: OAuth approval_prompt (default "force")
+  -account-chooser bool: force google account chooser (default false)
+  -approval-prompt bool: force OAuth approval_prompt (default true)
   -authenticated-emails-file string: authenticate against emails via file (one per line)
   -azure-tenant string: go to a tenant-specific or common (tenant-independent) endpoint. (default "common")
   -basic-auth-password string: the password to set when passing the HTTP Basic Auth header

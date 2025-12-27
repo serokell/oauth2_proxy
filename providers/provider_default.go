@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+  "strings"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -84,7 +85,15 @@ func (p *ProviderData) GetLoginURL(redirectURI, state string) string {
 	a = *p.LoginURL
 	params, _ := url.ParseQuery(a.RawQuery)
 	params.Set("redirect_uri", redirectURI)
-	params.Set("approval_prompt", p.ApprovalPrompt)
+  prompt := []string{}
+  if p.ApprovalPrompt {
+    prompt = append(prompt, "consent")
+  } else if p.AccountChooser {
+    prompt = append(prompt, "select_account")
+  }
+  if len(prompt) > 0 {
+    params.Set("prompt", strings.Join(prompt, " "))
+  }
 	params.Add("scope", p.Scope)
 	params.Set("client_id", p.ClientID)
 	params.Set("response_type", "code")
